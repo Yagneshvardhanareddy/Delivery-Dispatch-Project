@@ -1,6 +1,7 @@
 # Delivery Dispatch Optimiser
 
-A decision tool for food delivery. Given a batch of waiting orders and a pool of riders, it decides **which rider should take which order** so the total delivery time is as low as possible. It can also move riders between city zones before dispatch, plan which zone-to-zone deliveries to serve for the best profit, and predict delivery times with a neural network.
+
+A small decision tool for food delivery. Given a batch of waiting orders and a pool of riders, it decides **which rider should take which order** so that the total delivery time is as low as possible. It can also move riders between city zones before dispatch, and it can plan which zone-to-zone deliveries to serve to keep profit high.
 
 The three optimisation methods are written from scratch in NumPy and checked against SciPy:
 
@@ -10,7 +11,28 @@ The three optimisation methods are written from scratch in NumPy and checked aga
 | 2 | Transportation problem, **Vogel's approximation + MODI** | how many riders to move from zone to zone before dispatch |
 | 3 | Linear programming, **Simplex (Two-Phase and Big-M)** | which zone-to-zone deliveries to serve to maximise profit |
 
-Dataset: the Kaggle *Food Delivery Dataset* by Gaurav Malik (`train.csv`, 41,384 rows after cleaning, 22 cities).
+A web dashboard shows the routes on a map, compares the result with simple rules, and explains each algorithm with small live examples.
+
+Dataset: the Kaggle *Food Delivery Dataset* by Gaurav Malik (`train.csv`).
+
+Working Hosted Webapp link- https://delivery-dispatch-project.onrender.com/
+
+---
+
+## Table of contents
+
+1. [Quick start](#1-quick-start)
+2. [Ways to run it](#2-ways-to-run-it)
+3. [The web dashboard](#3-the-web-dashboard)
+4. [How it works](#4-how-it-works)
+5. [Benchmarks](#5-benchmarks)
+6. [Project structure](#6-project-structure)
+7. [Testing](#7-testing)
+8. [Hosting it online](#8-hosting-it-online)
+9. [Settings you can change](#9-settings-you-can-change)
+10. [Assumptions and limits](#10-assumptions-and-limits)
+11. [Ideas for improvement](#11-ideas-for-improvement)
+12. [Troubleshooting](#12-troubleshooting)
 
 ---
 
@@ -237,9 +259,12 @@ It holds out 20% of the rows and prints the mean absolute error (in minutes) of 
 
 | Model | Mean absolute error |
 | --- | --- |
-| Simple formula (distance, traffic, weather, vehicle) | 6.915 min |
-| Neural network | **5.023 min** |
+| Map shows "API KEY REQUIRED" | the old CARTO tile address now needs a key. Use the OpenStreetMap address in `initMap()` in `web/app.js` |
+| Old behaviour after editing `app.js` | hard-refresh the browser (Ctrl+F5) |
+| Top bar warns about fake data | `data/train.csv` was not found. Put the file in `data/` or set `DATA_PATH` |
+| "Neural network is not available" | install PyTorch and run `python train_nn.py` |
+| `pip install` is very slow or fails on torch | use `pip install -r requirements-deploy.txt` |
+| Charts or map are blank | check your internet connection, because libraries load from a CDN |
+| Port already in use | start with `uvicorn app:app --port 8001` |
 
-The network's predictions are off by 1.9 minutes less on average, about **27% lower error** than the formula. It is clearly better, so it is worth switching on. The error is measured on real rows the network never saw during training. Note that this improves the predicted time of a single delivery. It does not change the fact that the dispatch comparison in section 5 uses model estimates.
-
-**Use it.** Tick the neural network switch on the Dispatch page, or run `python run_demo.py --nn`. The switch is disabled until `torch` is installed and the model file exists.`
+#contributors
