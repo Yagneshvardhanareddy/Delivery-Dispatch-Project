@@ -1,0 +1,789 @@
+{
+  "config": {
+    "city": "JAP",
+    "n_orders": 30,
+    "n_riders": 30,
+    "n_zones": 4,
+    "seed": 42,
+    "rebalance": true,
+    "use_nn": false,
+    "lp_method": "two_phase",
+    "revenue_per_order": 90.0,
+    "rider_cost_per_min": 1.0,
+    "delay_target_min": 30.0,
+    "delay_penalty_per_min": 1.5,
+    "max_delivery_min": 60.0,
+    "min_service_share": 0.5
+  },
+  "model_stats": {
+    "min_per_km": 0.5375,
+    "pickup_min_per_km": 3.0,
+    "fixed_min": 21.0878,
+    "traffic_mult": {
+      "High": 1.1608,
+      "Jam": 1.1315,
+      "Low": 0.8355,
+      "Medium": 0.9885
+    },
+    "weather_mult": {
+      "Cloudy": 1.0981,
+      "Fog": 1.1001,
+      "Sandstorms": 0.985,
+      "Stormy": 0.9839,
+      "Sunny": 0.8338,
+      "Windy": 0.9924
+    },
+    "vehicle_mult": {
+      "electric_scooter": 0.9261,
+      "motorcycle": 1.0499,
+      "scooter": 0.9302
+    },
+    "n_rows_used": 41384
+  },
+  "n_orders": 30,
+  "n_riders": 30,
+  "strategies": [
+    {
+      "name": "Random assignment",
+      "served": 30.0,
+      "unserved": 0.0,
+      "total_minutes": 1248.5504268489808,
+      "avg_minutes": 41.61834756163269,
+      "delayed_orders": 23.43,
+      "profit": 899.1933499225846,
+      "improvement_vs_random_pct": 0.0,
+      "improvement_vs_nearest_pct": -17.65
+    },
+    {
+      "name": "Nearest rider first",
+      "served": 30,
+      "unserved": 0,
+      "total_minutes": 1061.1992805890277,
+      "avg_minutes": 35.37330935296759,
+      "delayed_orders": 15,
+      "profit": 1315.0620726811453,
+      "improvement_vs_random_pct": 15.01,
+      "improvement_vs_nearest_pct": 0.0
+    },
+    {
+      "name": "Hungarian (optimal)",
+      "served": 30,
+      "unserved": 0,
+      "total_minutes": 967.0360065556827,
+      "avg_minutes": 32.23453355185609,
+      "delayed_orders": 18,
+      "profit": 1564.044076888109,
+      "improvement_vs_random_pct": 22.55,
+      "improvement_vs_nearest_pct": 8.87
+    },
+    {
+      "name": "Hungarian + rider rebalancing",
+      "served": 30,
+      "unserved": 0,
+      "total_minutes": 933.0474142760008,
+      "avg_minutes": 31.101580475866694,
+      "delayed_orders": 15,
+      "profit": 1619.7982024521305,
+      "improvement_vs_random_pct": 25.27,
+      "improvement_vs_nearest_pct": 12.08
+    }
+  ],
+  "final_strategy": "Hungarian + rider rebalancing",
+  "assignments": [
+    {
+      "order_id": "0xb9ce",
+      "rider_id": "JAPRES16DEL02",
+      "rider": [
+        26.911792590739964,
+        75.79068615027447
+      ],
+      "restaurant": [
+        26.911378,
+        75.789034
+      ],
+      "customer": [
+        26.941378,
+        75.819034
+      ],
+      "est_minutes": 23.57812706987032,
+      "traffic": "Low",
+      "weather": "Fog"
+    },
+    {
+      "order_id": "0x998b",
+      "rider_id": "JAPRES08DEL03",
+      "rider": [
+        26.921707330709392,
+        75.78562475344116
+      ],
+      "restaurant": [
+        26.921411,
+        75.793604
+      ],
+      "customer": [
+        26.931411,
+        75.803604
+      ],
+      "est_minutes": 24.15271932636832,
+      "traffic": "Low",
+      "weather": "Fog"
+    },
+    {
+      "order_id": "0x7705",
+      "rider_id": "JAPRES010DEL01",
+      "rider": [
+        26.90335072322534,
+        75.79334542033877
+      ],
+      "restaurant": [
+        26.902908,
+        75.792934
+      ],
+      "customer": [
+        26.932908,
+        75.822934
+      ],
+      "est_minutes": 23.076639326424417,
+      "traffic": "Medium",
+      "weather": "Sunny"
+    },
+    {
+      "order_id": "0x28b8",
+      "rider_id": "JAPRES03DEL03",
+      "rider": [
+        26.9048510620717,
+        75.80179362157851
+      ],
+      "restaurant": [
+        26.913483,
+        75.803139
+      ],
+      "customer": [
+        27.003483,
+        75.893139
+      ],
+      "est_minutes": 30.236888136807313,
+      "traffic": "Medium",
+      "weather": "Stormy"
+    },
+    {
+      "order_id": "0x7c51",
+      "rider_id": "JAPRES02DEL02",
+      "rider": [
+        26.881894563945103,
+        75.81592777834176
+      ],
+      "restaurant": [
+        26.88842,
+        75.800689
+      ],
+      "customer": [
+        26.90842,
+        75.820689
+      ],
+      "est_minutes": 26.158400429171884,
+      "traffic": "Low",
+      "weather": "Stormy"
+    },
+    {
+      "order_id": "0x68b6",
+      "rider_id": "JAPRES04DEL03",
+      "rider": [
+        26.90527800627266,
+        75.80122843022359
+      ],
+      "restaurant": [
+        26.913483,
+        75.803139
+      ],
+      "customer": [
+        27.023483,
+        75.913139
+      ],
+      "est_minutes": 31.628180003223974,
+      "traffic": "Medium",
+      "weather": "Windy"
+    },
+    {
+      "order_id": "0xa77b",
+      "rider_id": "JAPRES13DEL01",
+      "rider": [
+        26.906402332987057,
+        75.79674821780276
+      ],
+      "restaurant": [
+        26.905287,
+        75.794592
+      ],
+      "customer": [
+        26.935287,
+        75.824592
+      ],
+      "est_minutes": 23.82453444690574,
+      "traffic": "Low",
+      "weather": "Windy"
+    },
+    {
+      "order_id": "0x53d4",
+      "rider_id": "JAPRES05DEL03",
+      "rider": [
+        26.90701067986892,
+        75.78033391976011
+      ],
+      "restaurant": [
+        26.910262,
+        75.783013
+      ],
+      "customer": [
+        26.950262,
+        75.823013
+      ],
+      "est_minutes": 27.186441932861904,
+      "traffic": "High",
+      "weather": "Fog"
+    },
+    {
+      "order_id": "0x7687",
+      "rider_id": "JAPRES04DEL02",
+      "rider": [
+        26.89719460956645,
+        75.79798505816743
+      ],
+      "restaurant": [
+        26.902328,
+        75.794257
+      ],
+      "customer": [
+        27.042328,
+        75.934257
+      ],
+      "est_minutes": 31.260960425394863,
+      "traffic": "Low",
+      "weather": "Windy"
+    },
+    {
+      "order_id": "0x7c3b",
+      "rider_id": "JAPRES19DEL03",
+      "rider": [
+        26.88995476414345,
+        75.79952563026914
+      ],
+      "restaurant": [
+        26.88842,
+        75.800689
+      ],
+      "customer": [
+        26.93842,
+        75.850689
+      ],
+      "est_minutes": 25.915442935494564,
+      "traffic": "Jam",
+      "weather": "Windy"
+    },
+    {
+      "order_id": "0xf27",
+      "rider_id": "JAPRES07DEL03",
+      "rider": [
+        26.922743929655745,
+        75.75467729058454
+      ],
+      "restaurant": [
+        26.910262,
+        75.783013
+      ],
+      "customer": [
+        26.940262,
+        75.813013
+      ],
+      "est_minutes": 31.301389556466102,
+      "traffic": "Medium",
+      "weather": "Sunny"
+    },
+    {
+      "order_id": "0x4412",
+      "rider_id": "JAPRES20DEL01",
+      "rider": [
+        26.76706424558049,
+        75.83200892234169
+      ],
+      "restaurant": [
+        26.849596,
+        75.800512
+      ],
+      "customer": [
+        26.909596,
+        75.860512
+      ],
+      "est_minutes": 52.012848063910944,
+      "traffic": "Medium",
+      "weather": "Windy"
+    },
+    {
+      "order_id": "0x9827",
+      "rider_id": "JAPRES16DEL03",
+      "rider": [
+        26.885437660296933,
+        75.80864550877382
+      ],
+      "restaurant": [
+        26.88842,
+        75.800689
+      ],
+      "customer": [
+        26.90842,
+        75.820689
+      ],
+      "est_minutes": 24.69035121486828,
+      "traffic": "Low",
+      "weather": "Sandstorms"
+    },
+    {
+      "order_id": "0x9a43",
+      "rider_id": "JAPRES01DEL03",
+      "rider": [
+        26.892678473484427,
+        75.7984878619902
+      ],
+      "restaurant": [
+        26.891191,
+        75.802083
+      ],
+      "customer": [
+        26.941191,
+        75.852083
+      ],
+      "est_minutes": 25.782018836995967,
+      "traffic": "Medium",
+      "weather": "Sandstorms"
+    },
+    {
+      "order_id": "0x35fa",
+      "rider_id": "JAPRES18DEL02",
+      "rider": [
+        26.950983563644765,
+        75.78169930580671
+      ],
+      "restaurant": [
+        26.913483,
+        75.803139
+      ],
+      "customer": [
+        26.993483,
+        75.883139
+      ],
+      "est_minutes": 34.33718293243015,
+      "traffic": "Low",
+      "weather": "Sunny"
+    },
+    {
+      "order_id": "0xb211",
+      "rider_id": "JAPRES02DEL01",
+      "rider": [
+        26.766136592712108,
+        75.83787363255591
+      ],
+      "restaurant": [
+        26.846156,
+        75.8023
+      ],
+      "customer": [
+        26.956156,
+        75.9123
+      ],
+      "est_minutes": 54.88857775100513,
+      "traffic": "Medium",
+      "weather": "Stormy"
+    },
+    {
+      "order_id": "0x9f67",
+      "rider_id": "JAPRES02DEL03",
+      "rider": [
+        26.89751893919337,
+        75.8125417643902
+      ],
+      "restaurant": [
+        26.891191,
+        75.802083
+      ],
+      "customer": [
+        26.961191,
+        75.872083
+      ],
+      "est_minutes": 29.306572349713008,
+      "traffic": "Jam",
+      "weather": "Sunny"
+    },
+    {
+      "order_id": "0x3971",
+      "rider_id": "JAPRES07DEL01",
+      "rider": [
+        26.750927718490768,
+        75.8422608353806
+      ],
+      "restaurant": [
+        26.849596,
+        75.800512
+      ],
+      "customer": [
+        26.869596,
+        75.820512
+      ],
+      "est_minutes": 49.4594328431386,
+      "traffic": "Low",
+      "weather": "Windy"
+    },
+    {
+      "order_id": "0xa61d",
+      "rider_id": "JAPRES17DEL02",
+      "rider": [
+        26.92125051773113,
+        75.74630981817401
+      ],
+      "restaurant": [
+        26.910262,
+        75.783013
+      ],
+      "customer": [
+        26.920262,
+        75.793013
+      ],
+      "est_minutes": 31.71825596010227,
+      "traffic": "Low",
+      "weather": "Stormy"
+    },
+    {
+      "order_id": "0x67bd",
+      "rider_id": "JAPRES19DEL02",
+      "rider": [
+        26.891866568024064,
+        75.80843522683674
+      ],
+      "restaurant": [
+        26.892312,
+        75.806896
+      ],
+      "customer": [
+        26.922313,
+        75.836896
+      ],
+      "est_minutes": 23.86566607371788,
+      "traffic": "Low",
+      "weather": "Cloudy"
+    },
+    {
+      "order_id": "0x6ace",
+      "rider_id": "JAPRES06DEL03",
+      "rider": [
+        26.909162335483433,
+        75.79735223414644
+      ],
+      "restaurant": [
+        26.913483,
+        75.803139
+      ],
+      "customer": [
+        27.023483,
+        75.913139
+      ],
+      "est_minutes": 32.545452860114594,
+      "traffic": "Jam",
+      "weather": "Sandstorms"
+    },
+    {
+      "order_id": "0x7b0b",
+      "rider_id": "JAPRES01DEL02",
+      "rider": [
+        26.907317648579408,
+        75.8109087423026
+      ],
+      "restaurant": [
+        26.90519,
+        75.810753
+      ],
+      "customer": [
+        27.04519,
+        75.950753
+      ],
+      "est_minutes": 33.25888127097922,
+      "traffic": "Medium",
+      "weather": "Stormy"
+    },
+    {
+      "order_id": "0x719f",
+      "rider_id": "JAPRES06DEL01",
+      "rider": [
+        26.917466074738016,
+        75.75375348647313
+      ],
+      "restaurant": [
+        26.910262,
+        75.783013
+      ],
+      "customer": [
+        26.960262,
+        75.833013
+      ],
+      "est_minutes": 31.13950525067611,
+      "traffic": "Low",
+      "weather": "Windy"
+    },
+    {
+      "order_id": "0x8a19",
+      "rider_id": "JAPRES010DEL02",
+      "rider": [
+        26.890833101091637,
+        75.80920895518952
+      ],
+      "restaurant": [
+        26.891191,
+        75.802083
+      ],
+      "customer": [
+        27.031191,
+        75.942083
+      ],
+      "est_minutes": 33.14939137314368,
+      "traffic": "Medium",
+      "weather": "Stormy"
+    },
+    {
+      "order_id": "0xac28",
+      "rider_id": "JAPRES09DEL01",
+      "rider": [
+        26.910908931596094,
+        75.74770897721406
+      ],
+      "restaurant": [
+        26.913726,
+        75.75282
+      ],
+      "customer": [
+        26.993726,
+        75.83282
+      ],
+      "est_minutes": 27.079799839236014,
+      "traffic": "Low",
+      "weather": "Sunny"
+    },
+    {
+      "order_id": "0x2aa8",
+      "rider_id": "JAPRES15DEL03",
+      "rider": [
+        26.842729377422696,
+        75.79853701876566
+      ],
+      "restaurant": [
+        26.846156,
+        75.8023
+      ],
+      "customer": [
+        26.986156,
+        75.9423
+      ],
+      "est_minutes": 34.296117767158165,
+      "traffic": "Jam",
+      "weather": "Stormy"
+    },
+    {
+      "order_id": "0x7526",
+      "rider_id": "JAPRES16DEL01",
+      "rider": [
+        26.91640655251491,
+        75.81509853048988
+      ],
+      "restaurant": [
+        26.914142,
+        75.805704
+      ],
+      "customer": [
+        26.974142,
+        75.865704
+      ],
+      "est_minutes": 27.65811933140458,
+      "traffic": "Low",
+      "weather": "Cloudy"
+    },
+    {
+      "order_id": "0x11b7",
+      "rider_id": "JAPRES14DEL01",
+      "rider": [
+        26.904371968726053,
+        75.79089383918544
+      ],
+      "restaurant": [
+        26.905287,
+        75.794592
+      ],
+      "customer": [
+        26.935287,
+        75.824592
+      ],
+      "est_minutes": 24.1122817997879,
+      "traffic": "Low",
+      "weather": "Cloudy"
+    },
+    {
+      "order_id": "0x68d4",
+      "rider_id": "JAPRES13DEL02",
+      "rider": [
+        26.915228860892768,
+        75.79035535107445
+      ],
+      "restaurant": [
+        26.911378,
+        75.789034
+      ],
+      "customer": [
+        27.001378,
+        75.879034
+      ],
+      "est_minutes": 28.557377181934413,
+      "traffic": "Jam",
+      "weather": "Sunny"
+    },
+    {
+      "order_id": "0x2107",
+      "rider_id": "JAPRES13DEL03",
+      "rider": [
+        26.76400605926125,
+        75.8306117481843
+      ],
+      "restaurant": [
+        26.766536,
+        75.837333
+      ],
+      "customer": [
+        26.906536,
+        75.977333
+      ],
+      "est_minutes": 36.86985798669467,
+      "traffic": "Jam",
+      "weather": "Windy"
+    }
+  ],
+  "zones": {
+    "centroids": [
+      [
+        26.906471482758622,
+        75.79707375862068
+      ],
+      [
+        27.00116972727273,
+        75.92187418181818
+      ],
+      [
+        26.83793933333333,
+        75.81057816666666
+      ],
+      [
+        26.945444642857144,
+        75.837927
+      ]
+    ],
+    "riders_per_zone": [
+      22.0,
+      0.0,
+      6.0,
+      2.0
+    ],
+    "orders_per_zone": [
+      25.0,
+      0.0,
+      5.0,
+      0.0
+    ],
+    "flow": [
+      [
+        22.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        1.0,
+        0.0,
+        5.0,
+        0.0
+      ],
+      [
+        2.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "transport_cost_km": 19.600580227237792,
+    "initial_vam_cost_km": 19.600580227237792,
+    "modi_iterations": 0,
+    "dummy": null,
+    "riders_moved": 3
+  },
+  "profit_plan": {
+    "status": "optimal",
+    "objective": 1802.2180213118368,
+    "plan": [
+      [
+        22.0,
+        0.0,
+        1.0,
+        2.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        5.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "share_used": 0.5,
+    "method": "two_phase",
+    "iterations": 7,
+    "est_minutes": [
+      [
+        25.597806779398326,
+        70.16149469634288,
+        46.82322896663726,
+        41.869958416463994
+      ],
+      [
+        69.82196031472144,
+        21.0878,
+        84.81218287497268,
+        52.207214645145015
+      ],
+      [
+        51.944036007816145,
+        92.60981306897219,
+        28.644473008497357,
+        65.55716533123982
+      ],
+      [
+        38.8827735224828,
+        52.207214645145015,
+        57.861442355322815,
+        21.0878
+      ]
+    ]
+  },
+  "neural_network": null,
+  "runtime_ms": 559.3,
+  "note": "All delivery times are model estimates, not measurements."
+}

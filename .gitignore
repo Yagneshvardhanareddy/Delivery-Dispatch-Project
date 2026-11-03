@@ -1,6 +1,4 @@
 __pycache__/
 *.pyc
 .venv/
-outputs/
-models/*.pt
 .pytest_cache/
