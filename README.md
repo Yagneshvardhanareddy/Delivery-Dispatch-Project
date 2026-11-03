@@ -1,5 +1,6 @@
 # Delivery Dispatch Optimiser
 
+
 A small decision tool for food delivery. Given a batch of waiting orders and a pool of riders, it decides **which rider should take which order** so that the total delivery time is as low as possible. It can also move riders between city zones before dispatch, and it can plan which zone-to-zone deliveries to serve to keep profit high.
 
 The three optimisation methods are written from scratch in NumPy and checked against SciPy:
@@ -421,3 +422,5 @@ Product
 | `pip install` is very slow or fails on torch | use `pip install -r requirements-deploy.txt` |
 | Charts or map are blank | check your internet connection, because libraries load from a CDN |
 | Port already in use | start with `uvicorn app:app --port 8001` |
+
+#contributors
