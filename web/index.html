@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Food delivery dispatch optimiser</title>
+
+  <!-- Fonts, Tailwind (utility classes), Leaflet (map), Plotly (charts): all loaded from a CDN, so the
+       first load needs internet. No build step is needed. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">Delivery dispatch optimiser</div>
+  <nav class="tabs" role="tablist" aria-label="Pages">
+    <button class="tab" role="tab" id="nav-dispatch" data-tab="dispatch" aria-selected="true">Dispatch</button>
+    <button class="tab" role="tab" id="nav-dataset" data-tab="dataset" aria-selected="false">Dataset</button>
+    <button class="tab" role="tab" id="nav-how" data-tab="how" aria-selected="false">How it works</button>
+  </nav>
+  <div class="badge" id="data-badge">Loading data...</div>
+</header>
+
+<!-- =============================================================== DISPATCH -->
+<div id="tab-dispatch" class="layout">
+  <aside class="rail" aria-label="Dispatch settings">
+    <h2>Batch settings</h2>
+
+    <div class="field">
+      <label for="f-city">City</label>
+      <select id="f-city"></select>
+      <div class="hint">Riders only work inside one city.</div>
+    </div>
+
+    <div class="field">
+      <label for="f-orders">Orders in the batch</label>
+      <div class="pair">
+        <input type="number" id="f-orders" min="1" max="200" value="30">
+        <input type="range" id="f-orders-range" min="5" max="150" value="30" aria-label="Orders slider">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="f-riders">Riders available</label>
+      <div class="pair">
+        <input type="number" id="f-riders" min="1" max="200" value="30">
+        <input type="range" id="f-riders-range" min="5" max="150" value="30" aria-label="Riders slider">
+      </div>
+      <div class="hint">Fewer riders than orders leaves some orders unserved.</div>
+    </div>
+
+    <div class="field">
+      <label for="f-zones">City zones</label>
+      <div class="pair">
+        <input type="number" id="f-zones" min="1" max="10" value="4">
+        <input type="range" id="f-zones-range" min="1" max="10" value="4" aria-label="Zones slider">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="f-seed">Random seed</label>
+      <input type="number" id="f-seed" min="0" value="42">
+      <div class="hint">Same seed, same batch. Change it to draw a new one.</div>
+    </div>
+
+    <label class="check"><input type="checkbox" id="f-rebalance" checked>
+      <span>Move riders between zones first (Transportation problem)</span></label>
+          <label class="check"><input type="checkbox" id="f-routes" checked>
+      <span>Show routes on the map</span></label>
+
+    <div class="field">
+      <label for="f-lp">Profit LP method</label>
+      <select id="f-lp">
+        <option value="two_phase">Two-Phase Simplex</option>
+        <option value="big_m">Big-M Simplex</option>
+      </select>
+    </div>
+
+    <label class="check disabled" id="nn-check"><input type="checkbox" id="f-nn" disabled>
+      <span>Use neural-network delivery times<br><span class="hint" id="nn-hint">Not available yet.</span></span></label>
+
+    <details class="assume">
+      <summary>Business assumptions</summary>
+      <div class="hint" style="margin-bottom:.6rem">The dataset has no prices, so these are assumptions. Change them and run again.</div>
+      <div class="grid2">
+        <div class="field"><label for="f-revenue">Revenue per order (Rs)</label><input type="number" id="f-revenue" value="90" min="0"></div>
+        <div class="field"><label for="f-cost">Rider cost per minute (Rs)</label><input type="number" id="f-cost" value="1" min="0" step="0.1"></div>
+        <div class="field"><label for="f-target">Promised time (min)</label><input type="number" id="f-target" value="30" min="1"></div>
+        <div class="field"><label for="f-penalty">Late penalty per minute (Rs)</label><input type="number" id="f-penalty" value="1.5" min="0" step="0.1"></div>
+        <div class="field"><label for="f-maxmin">Longest allowed trip (min)</label><input type="number" id="f-maxmin" value="60" min="1"></div>
+        <div class="field"><label for="f-share">Minimum share served per zone</label><input type="number" id="f-share" value="0.5" min="0" max="1" step="0.1"></div>
+      </div>
+    </details>
+
+    <button class="btn-primary" id="run-btn" type="button">Run optimisation</button>
+    <div class="status-line" id="run-status" role="status" aria-live="polite"></div>
+    <div class="error-box hidden" id="error-box" role="alert"></div>
+  </aside>
+
+  <main class="main">
+    <h1 class="headline" id="headline">Choose a city and run the optimisation.</h1>
+    <p class="subline" id="subline">Each order will be matched to one rider so that the total delivery time is as small as possible.</p>
+
+    <div id="map" role="img" aria-label="Map of riders, restaurants and customers with the chosen assignments"></div>
+    <div class="legend" id="map-legend">
+      <span><i class="dot" style="background:var(--harbour)"></i>Rider</span>
+      <span><i class="dot" style="background:var(--saffron)"></i>Restaurant</span>
+      <span><i class="dot" style="background:var(--ink)"></i>Customer</span>
+      <span><i class="dash"></i>Rider to restaurant</span>
+      <span><i class="solid"></i>Restaurant to customer</span>
+    </div>
+
+    <h2 class="section-title">How the strategies compare</h2>
+    <p class="section-note">All times are estimates from a model fitted on the dataset. The data records only the rider who really delivered each order, so there is no measured time for a different rider. Random assignment is the average of 200 random draws. Random assignment is the average of 200 random draws.</p>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr>
+          <th>Strategy</th><th>Average minutes</th><th class="num">Total minutes</th>
+          <th class="num">Late orders</th><th class="num">Profit (Rs)</th><th class="num">vs nearest rider</th>
+        </tr></thead>
+        <tbody id="strategy-body"></tbody>
+      </table>
+    </div>
+    <div id="chart-strategies" class="chart"></div>
+
+    <h2 class="section-title">Moving riders between zones</h2>
+    <p class="section-note" id="zones-note"></p>
+    <div class="two-col">
+      <div><div id="chart-flow" class="chart"></div></div>
+      <div><dl class="kv" id="zones-kv"></dl></div>
+    </div>
+
+    <h2 class="section-title">Profit plan by zone</h2>
+    <p class="section-note" id="lp-note"></p>
+    <div class="two-col">
+      <div><div id="chart-plan" class="chart"></div></div>
+      <div><dl class="kv" id="lp-kv"></dl></div>
+    </div>
+
+    <div id="nn-box" class="hidden">
+      <h2 class="section-title">Neural-network delivery times</h2>
+      <dl class="kv" id="nn-kv"></dl>
+      <div class="verdict" id="nn-verdict"></div>
+    </div>
+  </main>
+</div>
+
+<!-- ================================================================ DATASET -->
+<div id="tab-dataset" class="page hidden">
+  <h1 class="headline">What the Kaggle data looks like</h1>
+  <p class="subline" id="ds-sub"></p>
+  <div class="stat-row" id="ds-stats"></div>
+
+  <h2 class="section-title">Delivery time against distance, traffic, weather and hour</h2>
+  <div class="two-col">
+    <div><div id="chart-dist" class="chart"></div></div>
+    <div><div id="chart-traffic" class="chart"></div></div>
+    <div><div id="chart-weather" class="chart"></div></div>
+    <div><div id="chart-hour" class="chart"></div></div>
+  </div>
+
+  <h2 class="section-title">Orders per city</h2>
+  <div id="chart-cities" class="chart"></div>
+
+  <h2 class="section-title">The time model learned from this data</h2>
+  <p class="section-note">Estimated delivery time = fixed minutes + (pickup distance x assumed pickup pace + delivery distance x fitted pace) x traffic x weather x vehicle multipliers. A multiplier of 1.3 means 30% slower than distance alone predicts.</p>
+  <div id="model-box"></div>
+</div>
+
+<!-- ============================================================ HOW IT WORKS -->
+<div id="tab-how" class="page hidden">
+  <h1 class="headline">How the optimiser works</h1>
+  <p class="subline">Three methods from the course, all written from scratch in NumPy and checked against SciPy. The examples below are solved live by that code.</p>
+
+  <div class="prose">
+    <h3>1. Assignment problem: Hungarian method</h3>
+    <p>Matches each order to exactly one rider to minimise total delivery time.</p>
+    <ol>
+      <li>Subtract the smallest value of each row from that row, then the same for each column.</li>
+      <li>Cover all zeros with the fewest possible lines.</li>
+      <li>If the number of lines equals the matrix size, choose one zero in each row and column: that is the optimal assignment.</li>
+      <li>Otherwise subtract the smallest uncovered value from uncovered cells, add it to cells covered twice, and repeat.</li>
+    </ol>
+    <p>With more orders than riders we add dummy riders; an order matched to a dummy is not served in this batch.</p>
+    <div class="example" id="alg-hungarian">Loading example...</div>
+
+    <h3>2. Transportation problem: Vogel's method and MODI</h3>
+    <p>Decides how many riders to move from zones with spare riders to zones with many orders, using the least total distance.</p>
+    <ol>
+      <li>Balance supply and demand with a dummy zone if the totals differ.</li>
+      <li>Vogel's Approximation: for each row and column take the gap between the two smallest costs, pick the largest gap, and fill its cheapest cell.</li>
+      <li>MODI: compute u and v with u + v = cost on every filled cell, then the opportunity cost of every empty cell.</li>
+      <li>If every opportunity cost is at least zero, the plan is optimal. Otherwise shift flow around the closed loop of the most negative cell and repeat.</li>
+    </ol>
+    <div class="example" id="alg-transport">Loading example...</div>
+
+    <h3>3. Linear programming: Simplex (Two-Phase and Big-M)</h3>
+    <p>Plans which zone-to-zone deliveries to serve so that profit = revenue - rider cost - late penalty is as large as possible, subject to rider capacity, a longest allowed trip, and a minimum share of orders served in each zone.</p>
+    <ol>
+      <li>Add slack variables to the "at most" rows. Rows with "at least" need surplus and artificial variables.</li>
+      <li><b>Two-Phase:</b> Phase I minimises the artificial variables to find a feasible start; Phase II then optimises profit.</li>
+      <li><b>Big-M:</b> artificial variables get a huge penalty M in the objective, so one phase is enough.</li>
+      <li>Each iteration brings in the most promising variable, picks the leaving row by the minimum ratio test, and pivots until no improvement is left.</li>
+    </ol>
+    <div class="example" id="alg-simplex">Loading example...</div>
+
+    <h3>Assumptions you should state in the presentation</h3>
+    <ul>
+      <li>The dataset has no live rider positions. Riders wait near real restaurants of the chosen city with about 1 km of random spread.</li>
+      <li>All times in the comparison are model estimates, not measurements.</li>
+      <li>Revenue, rider cost, the late penalty and the 30-minute promise are assumptions, because the data has no prices.</li>
+      <li>The Kaggle "City" column is only the city type. The real city is read from the rider ID.</li>
+    </ul>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
